@@ -4,6 +4,14 @@ inputs:
   image-name:
     description: 'Name of the Docker image, src-folder and tag'
     required: true
+  version:
+    description: 'Version tag for the Docker image (default: latest)'
+    required: false
+    default: 'latest'
+  suffix:
+    description: 'Optional suffix to add to the image name'
+    required: false
+    default: ''
 
 branding:
   icon: 'package'
@@ -15,8 +23,18 @@ runs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Set image tag
+      id: set-tag
+      run: |
+        IMAGE_TAG="${{ inputs.image-name }}"
+        if [ -n "${{ inputs.suffix }}" ]; then
+          IMAGE_TAG="${IMAGE_TAG}-${{ inputs.suffix }}"
+        fi
+        echo "::set-output name=image-tag::${IMAGE_TAG}"
+      shell: bash
+
     - name: Build Docker image
-      run: docker build -t ${{ inputs.image-name }} -f ${{ inputs.image-name }}/Dockerfile ./${{ inputs.image-name }}
+      run: docker build -t ${{ steps.set-tag.outputs.image-tag }}:${{ inputs.version }} -f ${{ inputs.image-name }}/Dockerfile ./${{ inputs.image-name }}
       shell: bash
 
     - name: Log in to Docker registry
@@ -28,6 +46,6 @@ runs:
 
     - name: Push Docker image to registry
       run: |
-        docker tag ${{ inputs.image-name }}:latest ${{ env.DOCKER_REGISTRY }}/${{ inputs.image-name }}:latest
-        docker push ${{ env.DOCKER_REGISTRY }}/${{ inputs.image-name }}:latest
+        docker tag ${{ steps.set-tag.outputs.image-tag }}:${{ inputs.version }} ${{ env.DOCKER_REGISTRY }}/${{ steps.set-tag.outputs.image-tag }}:${{ inputs.version }}
+        docker push ${{ env.DOCKER_REGISTRY }}/${{ steps.set-tag.outputs.image-tag }}:${{ inputs.version }}
       shell: bash
