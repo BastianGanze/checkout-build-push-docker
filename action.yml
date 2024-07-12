@@ -12,6 +12,9 @@ inputs:
     description: 'Optional suffix to add to the image name'
     required: false
     default: ''
+  build-args:
+    description: "List of build-time variables"
+    required: false
 
 branding:
   icon: 'package'
@@ -49,3 +52,4 @@ runs:
         tags: ${{ env.DOCKER_REGISTRY }}/${{ steps.set-tag.outputs.image-tag }}:${{ inputs.version }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
+        build-args: ${{ inputs.build-args }}
