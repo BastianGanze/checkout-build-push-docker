@@ -46,3 +46,5 @@ runs:
         context: ./${{ inputs.image-name }}
         push: true
         tags: ${{ env.DOCKER_REGISTRY }}/${{ steps.set-tag.outputs.image-tag }}:${{ inputs.version }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
