@@ -45,4 +45,4 @@ runs:
       with:
         context: ./${{ inputs.image-name }}
         push: true
-        tags: ${{ steps.set-tag.outputs.image-tag }}:${{ inputs.version }}
+        tags: ${{ env.DOCKER_REGISTRY }}/${{ steps.set-tag.outputs.image-tag }}:${{ inputs.version }}
