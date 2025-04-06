@@ -15,6 +15,9 @@ inputs:
   build-args:
     description: "List of build-time variables"
     required: false
+  secrets:
+    description: "List of build-time secrets"
+    required: false
 
 branding:
   icon: 'package'
@@ -52,4 +55,5 @@ runs:
         tags: ${{ env.DOCKER_REGISTRY }}/${{ steps.set-tag.outputs.image-tag }}:${{ inputs.version }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
+        secrets: ${{ inputs.secrets }}
         build-args: ${{ inputs.build-args }}
